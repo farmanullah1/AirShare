@@ -92,7 +92,7 @@
   }
 
   .progress-bar-track {
-    @apply w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden;
+    @apply w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden;
   }
 
   .progress-bar-fill {
@@ -113,19 +113,29 @@
   }
 }
 
+/* Animated mesh gradient background */
 .bg-mesh {
   background-color: transparent;
   background-image: 
     radial-gradient(at 40% 20%, hsla(214, 100%, 74%, 0.15) 0px, transparent 50%),
     radial-gradient(at 80% 0%, hsla(263, 100%, 80%, 0.12) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(188, 100%, 74%, 0.10) 0px, transparent 50%);
+    radial-gradient(at 0% 50%, hsla(188, 100%, 74%, 0.10) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, hsla(330, 100%, 74%, 0.08) 0px, transparent 50%);
+  animation: mesh-float 20s ease-in-out infinite alternate;
 }
 
 .dark .bg-mesh {
   background-image:
     radial-gradient(at 40% 20%, hsla(214, 100%, 20%, 0.4) 0px, transparent 50%),
     radial-gradient(at 80% 0%, hsla(263, 100%, 20%, 0.3) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(188, 100%, 20%, 0.2) 0px, transparent 50%);
+    radial-gradient(at 0% 50%, hsla(188, 100%, 20%, 0.2) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, hsla(330, 100%, 20%, 0.15) 0px, transparent 50%);
+}
+
+@keyframes mesh-float {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 5% 3%; }
+  100% { background-position: 0% 0%; }
 }
 
 @keyframes border-spin {
@@ -150,11 +160,13 @@
 
 @keyframes drop-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
-  50% { box-shadow: 0 0 0 8px rgba(14, 165, 233, 0.1); }
+  50% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0.15); }
 }
 
 .drop-zone-active {
   animation: drop-pulse 1.5s ease-in-out infinite;
+  border-color: rgba(14, 165, 233, 0.5) !important;
+  background-color: rgba(14, 165, 233, 0.05) !important;
 }
 
 @keyframes shimmer {
@@ -181,4 +193,34 @@
   height: 4px;
   border-radius: 50%;
   animation: float-dot 6s ease-in-out infinite;
+}
+
+/* Smooth gradient text animation for branding */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.gradient-text-animated {
+  background-size: 200% auto;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* Mobile touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary, .btn-secondary, .btn-danger {
+    min-height: 52px;
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Small screen adjustments */
+@media (max-width: 380px) {
+  .input-field {
+    font-size: 1.25rem;
+    letter-spacing: 0.2em;
+  }
 }
