@@ -10,7 +10,8 @@ function setupSocketHandlers(io) {
   io.on('connection', (socket) => {
     console.log(`[Socket] Connected: ${socket.id}`);
 
-    socket.on('create-room', (callback) => {
+    socket.on('create-room', (data, callback) => {
+      if (typeof data === 'function') { callback = data; data = null; }
       let roomCode;
       let attempts = 0;
       do {
