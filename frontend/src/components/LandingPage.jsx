@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Upload, Download, Lock, Zap, Cloud, Smartphone, Settings } from 'lucide-react';
+import { Upload, Download, Lock, Zap, Cloud, Smartphone, Settings, Shield, Globe, FileUp } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ThemeToggle from './ThemeToggle';
 import SettingsModal from './SettingsModal';
@@ -77,10 +77,10 @@ function Particles() {
 }
 
 const features = [
-  { icon: Lock, label: 'End-to-End', color: 'text-green-500' },
-  { icon: Zap, label: 'Full Speed', color: 'text-amber-500' },
-  { icon: Cloud, label: 'No Cloud', color: 'text-brand-500' },
-  { icon: Smartphone, label: 'All Devices', color: 'text-accent-500' },
+  { icon: Shield, label: 'End-to-End Encrypted', color: 'text-green-500', desc: 'Files never touch a server' },
+  { icon: Zap, label: 'Full Speed P2P', color: 'text-amber-500', desc: 'Direct device-to-device' },
+  { icon: Cloud, label: 'No Cloud Storage', color: 'text-brand-500', desc: 'Zero data retention' },
+  { icon: Globe, label: 'Cross Platform', color: 'text-accent-500', desc: 'Works on any modern browser' },
 ];
 
 export default function LandingPage() {
@@ -127,8 +127,9 @@ export default function LandingPage() {
               AirShare
             </span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-body text-lg">
-            Fast, private peer-to-peer file sharing
+          <p className="text-slate-500 dark:text-slate-400 font-body text-lg max-w-sm mx-auto">
+            Drop files, share a code, transfer instantly.
+            <span className="block text-sm mt-1 text-slate-400 dark:text-slate-500">No signup. No cloud. No limits.</span>
           </p>
         </motion.div>
 
@@ -194,10 +195,11 @@ export default function LandingPage() {
           transition={{ delay: 0.4 }}
           className="flex items-center justify-center gap-3 overflow-x-auto pb-2"
         >
-          {features.map(({ icon: Icon, label, color }) => (
+          {features.map(({ icon: Icon, label, color, desc }) => (
             <div
               key={label}
-              className="flex items-center gap-1.5 px-3 py-1.5 glass-card rounded-full text-xs font-mono font-medium whitespace-nowrap"
+              className="flex items-center gap-2 px-3 py-2 glass-card rounded-xl text-xs font-mono font-medium whitespace-nowrap group hover:scale-105 transition-transform"
+              title={desc}
             >
               <Icon className={`w-3.5 h-3.5 ${color}`} />
               <span>{label}</span>
@@ -220,7 +222,7 @@ export default function LandingPage() {
           >
             <Settings className="w-5 h-5 text-slate-500 dark:text-slate-400" />
           </button>
-          <span className="tag">v1.0.0</span>
+          <span className="tag">v1.1.0</span>
         </motion.div>
       </div>
 

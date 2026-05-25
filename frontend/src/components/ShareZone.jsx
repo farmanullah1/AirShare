@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
-import { ArrowLeft, FolderOpen, FileUp, Send, Wifi, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, FolderOpen, FileUp, Send, Wifi, AlertTriangle, PartyPopper, RotateCcw } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useWebRTC } from '../hooks/useWebRTC';
@@ -190,21 +190,53 @@ export default function ShareZone() {
           />
         )}
 
-        {/* Done state */}
+        {/* Done state with celebration */}
         {subState === 'done' && (
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="glass-card p-8 text-center space-y-4"
+            className="glass-card p-8 text-center space-y-5 relative overflow-hidden"
           >
-            <div className="text-5xl">&#10003;</div>
+            {/* Confetti particles */}
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 20 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    backgroundColor: ['#0ea5e9', '#8b5cf6', '#22c55e', '#f59e0b', '#ec4899'][i % 5],
+                  }}
+                  initial={{ top: '50%', opacity: 1, scale: 0 }}
+                  animate={{
+                    top: `${-10 - Math.random() * 20}%`,
+                    opacity: [1, 1, 0],
+                    scale: [0, 1.5, 0.5],
+                    x: (Math.random() - 0.5) * 200,
+                  }}
+                  transition={{ duration: 1.5, delay: i * 0.05, ease: 'easeOut' }}
+                />
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1, rotate: [0, -10, 10, 0] }}
+              transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+              className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center"
+            >
+              <PartyPopper className="w-8 h-8 text-green-500" />
+            </motion.div>
             <h2 className="text-xl font-display font-bold text-green-500">Transfer Complete!</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               All {files.length} file{files.length !== 1 ? 's' : ''} sent successfully.
             </p>
-            <button onClick={() => { setFiles([]); setSubState('idle'); }} className="btn-primary">
-              Send More Files
-            </button>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button onClick={() => { setFiles([]); setSubState('idle'); }} className="btn-primary">
+                <RotateCcw className="w-4 h-4" />
+                Send More Files
+              </button>
+            </div>
           </motion.div>
         )}
 
@@ -212,24 +244,33 @@ export default function ShareZone() {
         {['idle', 'waiting', 'connecting', 'connected'].includes(subState) && (
           <>
             {/* Drop zone */}
-            <div
+            <motion.div
               {...getRootProps()}
-              className={`glass-card p-8 border-2 border-dashed transition-all duration-200 cursor-pointer text-center ${
+              animate={isDragActive ? { scale: 1.02 } : { scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className={`glass-card p-8 border-2 border-dashed transition-all duration-300 cursor-pointer text-center relative overflow-hidden ${
                 isDragActive
-                  ? 'border-brand-400 bg-brand-500/5 drop-zone-active'
-                  : 'border-slate-300 dark:border-slate-600 hover:border-brand-400/50'
+                  ? 'border-brand-400 drop-zone-active'
+                  : 'border-slate-300 dark:border-slate-600 hover:border-brand-400/50 hover:shadow-lg'
               }`}
             >
               <input {...getInputProps()} />
-              <div className="space-y-3">
-                <div className="flex justify-center gap-2 text-3xl">
-                  <span>&#128193;</span><span>&#128444;&#65039;</span><span>&#127916;</span><span>&#127925;</span>
-                </div>
+              {isDragActive && (
+                <div className="absolute inset-0 bg-brand-500/5 dark:bg-brand-500/10 pointer-events-none" />
+              )}
+              <div className="space-y-3 relative z-10">
+                <motion.div
+                  className="w-16 h-16 mx-auto rounded-2xl bg-brand-500/10 dark:bg-brand-500/20 flex items-center justify-center"
+                  animate={isDragActive ? { y: -5, scale: 1.1 } : { y: 0, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <FileUp className={`w-8 h-8 ${isDragActive ? 'text-brand-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                </motion.div>
                 <p className="text-lg font-display font-bold text-slate-700 dark:text-slate-200">
-                  {isDragActive ? 'Drop files here' : 'Drop files or folders here'}
+                  {isDragActive ? 'Drop to add files' : 'Drop files or folders here'}
                 </p>
-                <p className="text-sm text-slate-400">
-                  Supports images, videos, documents, folders
+                <p className="text-sm text-slate-400 dark:text-slate-500">
+                  Images, videos, documents, archives &mdash; any file type
                 </p>
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
@@ -250,7 +291,7 @@ export default function ShareZone() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
             <input
               ref={folderInputRef}
               type="file"

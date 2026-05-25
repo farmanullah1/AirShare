@@ -15,6 +15,7 @@ export function useFileTransfer(sendRaw) {
   const [sendProgress, setSendProgress] = useState({});
   const [receiveProgress, setReceiveProgress] = useState({});
   const [receiving, setReceiving] = useState([]);
+  const [receivedFiles, setReceivedFiles] = useState([]);
   const receiveBuffers = useRef({});
   const receiveFileMeta = useRef({});
   const cancelRef = useRef(false);
@@ -112,6 +113,8 @@ export function useFileTransfer(sendRaw) {
         if (meta && chunks) {
           const file = reassembleFile(chunks, meta.name, meta.type);
           downloadFile(file);
+          const url = URL.createObjectURL(file);
+          setReceivedFiles(prev => [...prev, { id: msg.fileId, name: meta.name, size: meta.size, type: meta.type, url }]);
           delete receiveBuffers.current[msg.fileId];
           delete receiveFileMeta.current[msg.fileId];
         }
@@ -160,5 +163,6 @@ export function useFileTransfer(sendRaw) {
     sendProgress,
     receiveProgress,
     receiving,
+    receivedFiles,
   };
 }
